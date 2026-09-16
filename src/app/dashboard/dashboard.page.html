@@ -1,18 +1,167 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>dashboard</ion-title>
+  <ion-toolbar color="primary">
+    <ion-title>Dashboard Toko</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="muatRingkasan()" title="Segarkan Data">
+        <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="ion-padding">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">dashboard</ion-title>
-      <ion-item>
-        <ion-label>Tes</ion-label>
-        <ion-label position="floating">Name</ion-label>
-        <ion-input placeholder="Enter your name"></ion-input>
-      </ion-item>
+      <ion-title size="large">Dashboard</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <!-- Pull-to-refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Tarik untuk memperbarui..."
+      refreshingSpinner="circles"
+      refreshingText="Memperbarui data ringkasan...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Banner Toko -->
+  <div class="dashboard-banner">
+    <div class="banner-content">
+      <ion-badge color="secondary" class="badge-tanggal">{{ tanggalHariIni }}</ion-badge>
+      <h1 class="store-title">Toko Makmur Jaya</h1>
+      <p class="store-subtitle">Ringkasan operasional dan kinerja penjualan</p>
+    </div>
+  </div>
+
+  <!-- Grid Kartu Ringkasan (Interpolation Binding) -->
+  <ion-grid class="grid-ringkasan">
+    <ion-row>
+      <!-- Card 1: Jumlah Produk -->
+      <ion-col size="12" size-md="4">
+        <ion-card class="stat-card stat-produk">
+          <ion-card-content>
+            <div class="card-header-flex">
+              <div class="stat-icon-wrapper icon-produk">
+                <ion-icon name="cube-outline"></ion-icon>
+              </div>
+              <ion-badge color="success">Katalog</ion-badge>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Jumlah Produk</span>
+              <h2 class="stat-value">{{ jumlahProduk }}</h2>
+              <p class="stat-desc">{{ totalStok }} unit total stok tersedia</p>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <!-- Card 2: Total Transaksi Hari Ini -->
+      <ion-col size="12" size-md="4">
+        <ion-card class="stat-card stat-transaksi">
+          <ion-card-content>
+            <div class="card-header-flex">
+              <div class="stat-icon-wrapper icon-transaksi">
+                <ion-icon name="receipt-outline"></ion-icon>
+              </div>
+              <ion-badge color="primary">Hari Ini</ion-badge>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Total Transaksi Hari Ini</span>
+              <h2 class="stat-value">{{ totalTransaksiHariIni }}</h2>
+              <p class="stat-desc">Omzet: {{ formatRupiah(totalNominalHariIni) }}</p>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <!-- Card 3: Produk Terlaris -->
+      <ion-col size="12" size-md="4">
+        <ion-card class="stat-card stat-terlaris">
+          <ion-card-content>
+            <div class="card-header-flex">
+              <div class="stat-icon-wrapper icon-terlaris">
+                <ion-icon name="trophy-outline"></ion-icon>
+              </div>
+              <ion-badge color="warning">Terlaris</ion-badge>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Produk Terlaris</span>
+              <h2 class="stat-value stat-produk-nama">{{ produkTerlaris }}</h2>
+              <p class="stat-desc">{{ detailTerlaris.totalTerjual }} pcs berhasil terjual</p>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Rincian Detail Ringkasan -->
+  <ion-card class="detail-card">
+    <ion-card-header>
+      <ion-card-title>Detail Ringkasan Toko</ion-card-title>
+      <ion-card-subtitle>Data dihitung secara otomatis oleh service</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list lines="inset">
+        <ion-item>
+          <ion-icon name="pricetags-outline" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h3>Total Ragam Produk</h3>
+            <p>Varian item terdaftar di toko</p>
+          </ion-label>
+          <ion-note slot="end" color="dark" class="nilai-ringkasan">{{ jumlahProduk }} Produk</ion-note>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="cart-outline" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h3>Total Transaksi Hari Ini</h3>
+            <p>Jumlah struk transaksi hari ini</p>
+          </ion-label>
+          <ion-note slot="end" color="dark" class="nilai-ringkasan">{{ totalTransaksiHariIni }} Transaksi</ion-note>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="cash-outline" slot="start" color="success"></ion-icon>
+          <ion-label>
+            <h3>Total Nominal Hari Ini</h3>
+            <p>Akumulasi pendapatan transaksi hari ini</p>
+          </ion-label>
+          <ion-note slot="end" color="success" class="nilai-ringkasan">{{ formatRupiah(totalNominalHariIni) }}</ion-note>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="flame-outline" slot="start" color="warning"></ion-icon>
+          <ion-label>
+            <h3>Nama Produk Terlaris</h3>
+            <p>Produk dengan kuantitas jual terbanyak</p>
+          </ion-label>
+          <ion-note slot="end" color="warning" class="nilai-ringkasan">{{ produkTerlaris }}</ion-note>
+        </ion-item>
+
+        <ion-item lines="none">
+          <ion-icon name="stats-chart-outline" slot="start" color="tertiary"></ion-icon>
+          <ion-label>
+            <h3>Kuantitas Terjual</h3>
+            <p>Total unit terjual produk terlaris</p>
+          </ion-label>
+          <ion-note slot="end" color="tertiary" class="nilai-ringkasan">{{ detailTerlaris.totalTerjual }} pcs</ion-note>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Tombol Aksi Cepat -->
+  <div class="quick-actions ion-margin-top ion-text-center">
+    <ion-button fill="outline" color="primary" routerLink="/produk">
+      <ion-icon name="cube-outline" slot="start"></ion-icon>
+      Kelola Produk
+    </ion-button>
+    <ion-button fill="outline" color="primary" routerLink="/transaksi">
+      <ion-icon name="receipt-outline" slot="start"></ion-icon>
+      Lihat Transaksi
+    </ion-button>
+  </div>
 </ion-content>
