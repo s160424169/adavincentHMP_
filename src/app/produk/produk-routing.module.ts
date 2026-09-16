@@ -6,16 +6,20 @@ import { ProdukPage } from './produk.page';
 const routes: Routes = [
   {
     path: '',
-    component: ProdukPage
-  },  {
+    component: ProdukPage,
+  },
+  {
+    path: 'detail/:id',
+    loadChildren: () => import('./detail/detail.module').then((m) => m.DetailPageModule),
+  },
+  {
     path: 'detail',
-    loadChildren: () => import('./detail/detail.module').then( m => m.DetailPageModule)
+    loadChildren: () => import('./detail/detail.module').then((m) => m.DetailPageModule),
   },
   {
     path: 'form',
-    loadChildren: () => import('./form/form.module').then( m => m.FormPageModule)
-  }
-
+    loadChildren: () => import('./form/form.module').then((m) => m.FormPageModule),
+  },
 ];
 
 @NgModule({
