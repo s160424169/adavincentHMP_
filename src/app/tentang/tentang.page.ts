@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-tentang',
   templateUrl: './tentang.page.html',
   styleUrls: ['./tentang.page.scss'],
-  
+  standalone: false,
 })
 export class TentangPage implements OnInit {
 
