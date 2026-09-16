@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Tema } from '../services/tema';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-pengaturan',
@@ -6,11 +8,24 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./pengaturan.page.scss'],
   standalone: false,
 })
-export class PengaturanPage implements OnInit {
+export class PengaturanPage implements OnInit, OnDestroy {
+  modeGelap = false;
+  private langganan? : Subscription;
 
-  constructor() { }
+  
+
+  constructor(private tema: Tema) { }
 
   ngOnInit() {
+    this.langganan = this.tema.darkMode$.subscribe((aktif) => (this.modeGelap = aktif));
   }
 
+  ngOnDestroy(): void {
+    this.langganan?.unsubscribe();
+  }
+
+  onToggleModeGelap(event: CustomEvent<{ checked: boolean }>): void {
+    const aktif = event.detail.checked;
+    this.tema.toggleModeGelap(aktif);
+  }
 }
