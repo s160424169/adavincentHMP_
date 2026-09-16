@@ -8,6 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DashboardPage implements OnInit {
 
+  rafly: string = "a"
   constructor() { }
 
   ngOnInit() {
